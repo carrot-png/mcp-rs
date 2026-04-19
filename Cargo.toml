@@ -1,0 +1,26 @@
+[package]
+name = "mcp-rs"
+version = "0.1.0"
+edition = "2024"
+authors = ["carrot-png"]
+license = "AGPL-3.0-only"
+description = "MCP server for various small utilities."
+repository = ""
+readme = "README.md"
+keywords = ["mcp", "llm", "ai", "python"]
+
+[dependencies]
+anyhow = "1.0"
+axum = "0.8"
+monty = { git = "https://github.com/pydantic/monty" }
+rmcp = { version = "1.5", features = [
+  "server",
+  "transport-streamable-http-server",
+  "macros",
+] }
+schemars = "1.2.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1.50", features = ["full"] }
+tokio-util = { version = "0.7", features = ["full"] }
+tower-http = { version = "0.6", features = ["cors"] }
