@@ -38,3 +38,23 @@ fn run_monty(code: String) -> Result<String, MontyException> {
     println!("Result:\n\x1b[2m{out}\x1b[0m");
     Ok(out)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_run_python_success() {
+        let code = "print(5 + 5)".to_string();
+        let result = run_python(code);
+        let debug_res = format!("{:?}", result);
+        assert!(debug_res.contains("10"));
+    }
+
+    #[test]
+    fn test_run_python_syntax_error() {
+        let code = "if True".to_string();
+        let result = run_python(code);
+        assert!(result.is_error == Some(true));
+    }
+}
