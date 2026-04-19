@@ -1,0 +1,7 @@
+services:
+  mcp-rs:
+    container_name: mcp-rs
+    build: .
+    ports:
+      - "3000:3000"
+    restart: always

@@ -11,6 +11,7 @@ use rmcp::{
 };
 use serde::{Deserialize, Serialize};
 use tokio::net::TcpListener;
+use tokio_util::sync::CancellationToken;
 use tower_http::cors::CorsLayer;
 
 const BIND_ADDRESS: &str = "0.0.0.0:3000";
@@ -41,7 +42,7 @@ impl ServerHandler for McpServer {
 
 pub async fn run() -> anyhow::Result<()> {
     let server = McpServer;
-    let ct = tokio_util::sync::CancellationToken::new();
+    let ct = CancellationToken::new();
 
     let config = StreamableHttpServerConfig::default().with_cancellation_token(ct.clone());
 
@@ -59,10 +60,27 @@ pub async fn run() -> anyhow::Result<()> {
     println!("MCP endpoint:  http://{}/mcp", BIND_ADDRESS);
 
     axum::serve(listener, app)
-        .with_graceful_shutdown(async move {
-            tokio::signal::ctrl_c().await.unwrap();
-            ct.cancel();
-        })
+        .with_graceful_shutdown(shutdown_signal(ct.clone()))
         .await?;
     Ok(())
+}
+
+async fn shutdown_signal(ct: CancellationToken) {
+    let sigint = async {
+        tokio::signal::ctrl_c().await.unwrap();
+    };
+
+    let sigterm = async {
+        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+            .unwrap()
+            .recv()
+            .await;
+    };
+
+    tokio::select! {
+        _ = sigint => println!("Received SIGINT"),
+        _ = sigterm => println!("Received SIGTERM"),
+    }
+    println!("Shutting down...");
+    ct.cancel();
 }
