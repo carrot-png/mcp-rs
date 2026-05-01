@@ -26,7 +26,13 @@ struct PythonScript {
 
 #[tool_router]
 impl McpServer {
-    #[tool(description = "Run Python code in a sandbox")]
+    #[tool(description = r#"
+        Run Python code using a lightweight sandboxed Monty interpreter.
+        Supports core Python syntax and a very small subset of the standard library: math, re, json
+        Does NOT support:
+        - itertools, file I/O, classes, or random
+        - external libraries such as numpy, pandas, or matplotlib.
+    "#)]
     pub async fn run_python(&self, params: Parameters<PythonScript>) -> CallToolResult {
         crate::python::run_python(params.0.code)
     }
