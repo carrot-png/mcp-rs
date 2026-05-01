@@ -1,9 +1,8 @@
 use std::time::Duration;
 
 use monty::{LimitedTracker, MontyException, MontyRun, PrintWriter, ResourceLimits};
-use rmcp::model::CallToolResult;
 
-use crate::util::{error, success};
+use crate::util::{CallToolResult, error, success};
 
 const MAX_MEMORY_BYTES: usize = 1024 * 1024 * 1024; // 1 GiB
 const MAX_DURATION_SECS: Duration = Duration::from_secs(10);
@@ -22,7 +21,7 @@ fn get_limits() -> ResourceLimits {
         .max_duration(MAX_DURATION_SECS)
 }
 
-fn run_monty(code: String) -> Result<String, MontyException> {
+pub fn run_monty(code: String) -> Result<String, MontyException> {
     println!("\nRunning Python:\n\x1b[2m{code}\x1b[0m");
 
     let tracker = LimitedTracker::new(get_limits());

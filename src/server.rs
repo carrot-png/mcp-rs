@@ -14,6 +14,8 @@ use tokio::net::TcpListener;
 use tokio_util::sync::CancellationToken;
 use tower_http::cors::CorsLayer;
 
+use crate::tools;
+
 const BIND_ADDRESS: &str = "0.0.0.0:3000";
 
 #[derive(Clone)]
@@ -34,7 +36,12 @@ impl McpServer {
         - external libraries such as numpy, pandas, or matplotlib.
     "#)]
     pub async fn run_python(&self, params: Parameters<PythonScript>) -> CallToolResult {
-        crate::python::run_python(params.0.code)
+        tools::python::run_python(params.0.code)
+    }
+
+    #[tool(description = "Get the current date and time.")]
+    pub async fn datetime(&self) -> CallToolResult {
+        tools::datetime::datetime()
     }
 }
 

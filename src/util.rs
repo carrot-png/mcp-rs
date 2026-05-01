@@ -1,4 +1,5 @@
-use rmcp::model::{CallToolResult, Content};
+pub use rmcp::model::CallToolResult;
+use rmcp::model::Content;
 
 pub fn success(msg: impl Into<String>) -> CallToolResult {
     CallToolResult::success(vec![Content::text(msg)])

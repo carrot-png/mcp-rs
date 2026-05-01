@@ -5,6 +5,7 @@ An MCP (model context protocol) server for various small tools.
 ## Tools
 
 - **Python Sandbox**: Run Python code using the Monty interpreter.
+- **Date Time**: Get the local date and time.
 
 ## Running
 
