@@ -9,22 +9,16 @@ use rmcp::{
         streamable_http_server::session::local::LocalSessionManager,
     },
 };
-use serde::{Deserialize, Serialize};
 use tokio::net::TcpListener;
 use tokio_util::sync::CancellationToken;
 use tower_http::cors::CorsLayer;
 
-use crate::tools;
+use crate::tools::{self, python::PythonScript, search::WebSearch};
 
 const BIND_ADDRESS: &str = "0.0.0.0:3000";
 
 #[derive(Clone)]
 struct McpServer;
-
-#[derive(Serialize, Deserialize, schemars::JsonSchema)]
-struct PythonScript {
-    code: String,
-}
 
 #[tool_router]
 impl McpServer {
@@ -42,6 +36,12 @@ impl McpServer {
     #[tool(description = "Get the current date and time.")]
     pub async fn datetime(&self) -> CallToolResult {
         tools::datetime::datetime()
+    }
+
+    #[cfg(feature = "searxng")]
+    #[tool(description = "Web search")]
+    pub async fn web_search(&self, web_search: Parameters<WebSearch>) -> CallToolResult {
+        tools::search::query(web_search.0).await
     }
 }
 

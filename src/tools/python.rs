@@ -1,8 +1,14 @@
 use std::time::Duration;
 
 use monty::{LimitedTracker, MontyException, MontyRun, PrintWriter, ResourceLimits};
+use serde::{Deserialize, Serialize};
 
 use crate::util::{CallToolResult, error, success};
+
+#[derive(Serialize, Deserialize, schemars::JsonSchema)]
+pub struct PythonScript {
+    pub code: String,
+}
 
 const MAX_MEMORY_BYTES: usize = 1024 * 1024 * 1024; // 1 GiB
 const MAX_DURATION_SECS: Duration = Duration::from_secs(10);

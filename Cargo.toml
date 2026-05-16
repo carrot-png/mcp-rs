@@ -13,6 +13,7 @@ keywords = ["mcp", "llm", "ai", "python"]
 anyhow = "1.0"
 axum = "0.8"
 monty = { git = "https://github.com/pydantic/monty" }
+reqwest = { version = "0.13.3", features = ["json"] }
 rmcp = { version = "1.5", features = [
   "server",
   "transport-streamable-http-server",
@@ -25,3 +26,7 @@ time = { version = "0.3", features = ["local-offset", "macros", "formatting"] }
 tokio = { version = "1.50", features = ["full"] }
 tokio-util = { version = "0.7", features = ["full"] }
 tower-http = { version = "0.6", features = ["cors"] }
+
+[features]
+default = ["searxng"]
+searxng = []
