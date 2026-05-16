@@ -10,14 +10,16 @@ An MCP (model context protocol) server for various small tools.
 
 ## Configuration
 
-### Setting up SearXNG
-Ensure the SearXNG endpoint environment variable is set:
+Ensure the following environment variables are set:
 ```bash
 # .env
-SEARXNG_URL="http://localhost:8080"
+BASE_URL="your.host" # If you are using a reverse proxy
+MCP_PORT="3000" # Host port for docker
+SEARXNG_URL="http://localhost:8080" # Search endpoint
 ```
 
-If you are [hosting SearXNG locally](https://docs.searxng.org/admin/installation-docker.html#installation-container) ensure the json format is enabled:
+### SearXNG
+If you are [hosting SearXNG locally](https://docs.searxng.org/admin/installation-docker.html#installation-container) ensure the json search format is enabled:
 ```yaml
 # settings.yml
 search:

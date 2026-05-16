@@ -57,7 +57,11 @@ pub async fn run() -> anyhow::Result<()> {
     let server = McpServer;
     let ct = CancellationToken::new();
 
-    let config = StreamableHttpServerConfig::default().with_cancellation_token(ct.clone());
+    let mut config = StreamableHttpServerConfig::default().with_cancellation_token(ct.clone());
+
+    if let Ok(host) = std::env::var("BASE_URL") {
+        config = config.with_allowed_hosts(vec![host]);
+    }
 
     let mcp_service = StreamableHttpService::new(
         move || Ok(server.clone()),
