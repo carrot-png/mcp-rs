@@ -57,11 +57,9 @@ pub async fn run() -> anyhow::Result<()> {
     let server = McpServer;
     let ct = CancellationToken::new();
 
-    let mut config = StreamableHttpServerConfig::default().with_cancellation_token(ct.clone());
-
-    if let Ok(host) = std::env::var("BASE_URL") {
-        config = config.with_allowed_hosts(vec![host]);
-    }
+    let config = StreamableHttpServerConfig::default()
+        .with_cancellation_token(ct.clone())
+        .with_allowed_hosts(get_allowed_hosts());
 
     let mcp_service = StreamableHttpService::new(
         move || Ok(server.clone()),
@@ -80,6 +78,12 @@ pub async fn run() -> anyhow::Result<()> {
         .with_graceful_shutdown(shutdown_signal(ct.clone()))
         .await?;
     Ok(())
+}
+
+fn get_allowed_hosts() -> Vec<String> {
+    let mut hosts = vec!["localhost".into(), "127.0.0.1".into(), "::1".into()];
+    hosts.extend(std::env::var("BASE_URL"));
+    hosts
 }
 
 async fn shutdown_signal(ct: CancellationToken) {
