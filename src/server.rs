@@ -2,7 +2,7 @@ use axum::Router;
 use rmcp::{
     ServerHandler,
     handler::server::wrapper::Parameters,
-    model::{CallToolResult, ServerCapabilities, ServerInfo},
+    model::{CallToolResult, Implementation, ServerCapabilities, ServerInfo},
     tool, tool_handler, tool_router,
     transport::{
         StreamableHttpServerConfig, StreamableHttpService,
@@ -48,8 +48,12 @@ impl McpServer {
 #[tool_handler]
 impl ServerHandler for McpServer {
     fn get_info(&self) -> ServerInfo {
+        let implementation = Implementation::new(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"))
+            .with_website_url(env!("CARGO_PKG_REPOSITORY"))
+            .with_description(env!("CARGO_PKG_DESCRIPTION"));
+
         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
-            .with_instructions("A simple MCP tool server")
+            .with_server_info(implementation)
     }
 }
 

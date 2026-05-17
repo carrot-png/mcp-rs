@@ -5,7 +5,7 @@ edition = "2024"
 authors = ["carrot-png"]
 license = "AGPL-3.0-only"
 description = "MCP server for various small utilities."
-repository = ""
+repository = "https://github.com/carrot-png/mcp-rs"
 readme = "README.md"
 keywords = ["mcp", "llm", "ai", "python"]
 
@@ -14,7 +14,7 @@ anyhow = "1.0"
 axum = "0.8"
 monty = { git = "https://github.com/pydantic/monty" }
 reqwest = { version = "0.13.3", features = ["json"] }
-rmcp = { version = "1.5", features = [
+rmcp = { version = "1.7", features = [
   "server",
   "transport-streamable-http-server",
   "macros",
