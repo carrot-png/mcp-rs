@@ -11,3 +11,4 @@ services:
     environment:
       - BASE_URL=${BASE_URL}
       - SEARXNG_URL=${SEARXNG_URL}
+      - USER_AGENT=${USER_AGENT}
