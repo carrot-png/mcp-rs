@@ -25,6 +25,9 @@ const BIND_ADDRESS: &str = "0.0.0.0:3000";
 
 #[derive(Clone)]
 struct McpServer {
+    #[cfg(feature = "searxng")]
+    search_config: tools::search::SearchConfig,
+
     #[cfg(feature = "fetch")]
     fetch_client: reqwest::Client,
 }
@@ -32,6 +35,9 @@ struct McpServer {
 impl McpServer {
     fn new() -> Self {
         Self {
+            #[cfg(feature = "searxng")]
+            search_config: tools::search::SearchConfig::new(),
+
             #[cfg(feature = "fetch")]
             fetch_client: tools::fetch::get_client(),
         }
@@ -72,7 +78,7 @@ impl McpServer {
     #[cfg(feature = "searxng")]
     #[tool(description = "Web search")]
     pub async fn web_search(&self, web_search: Parameters<WebSearch>) -> CallToolResult {
-        tools::search::query(web_search.0).await
+        tools::search::query(&self.search_config, web_search.0).await
     }
 
     #[cfg(feature = "fetch")]
