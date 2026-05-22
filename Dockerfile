@@ -19,5 +19,6 @@ WORKDIR /app
 RUN addgroup -S mcpuser && adduser -S mcpuser -G mcpuser
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/mcp-rs .
 EXPOSE 3000
+USER mcpuser
 
 CMD ["./mcp-rs"]
