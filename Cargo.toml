@@ -12,6 +12,7 @@ keywords = ["mcp", "llm", "ai", "python"]
 [dependencies]
 anyhow = "1.0"
 axum = "0.8"
+html2text = "0.17.1"
 monty = { git = "https://github.com/pydantic/monty" }
 reqwest = { version = "0.13.3", features = ["json"] }
 rmcp = { version = "1.7", features = [
@@ -23,10 +24,11 @@ schemars = "1.2.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 time = { version = "0.3", features = ["local-offset", "macros", "formatting"] }
-tokio = { version = "1.50", features = ["full"] }
-tokio-util = { version = "0.7", features = ["full"] }
+tokio = { version = "1.50", features = ["rt-multi-thread", "macros", "signal"] }
+tokio-util = "0.7"
 tower-http = { version = "0.6", features = ["cors"] }
 
 [features]
-default = ["searxng"]
+default = ["searxng", "fetch"]
 searxng = []
+fetch = []

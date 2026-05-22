@@ -1,9 +1,9 @@
 use axum::Router;
 use rmcp::{
     ServerHandler,
-    handler::server::wrapper::Parameters,
+    handler::server::{tool::ToolRouter, wrapper::Parameters},
     model::{CallToolResult, Implementation, ServerCapabilities, ServerInfo},
-    tool, tool_handler, tool_router,
+    tool, tool_handler,
     transport::{
         StreamableHttpServerConfig, StreamableHttpService,
         streamable_http_server::session::local::LocalSessionManager,
@@ -13,15 +13,46 @@ use tokio::net::TcpListener;
 use tokio_util::sync::CancellationToken;
 use tower_http::cors::CorsLayer;
 
-use crate::tools::{self, python::PythonScript, search::WebSearch};
+#[cfg(feature = "searxng")]
+use crate::tools::search::WebSearch;
+
+#[cfg(feature = "fetch")]
+use crate::tools::fetch::WebFetch;
+
+use crate::tools::{self, python::PythonScript};
 
 const BIND_ADDRESS: &str = "0.0.0.0:3000";
 
 #[derive(Clone)]
-struct McpServer;
+struct McpServer {
+    #[cfg(feature = "fetch")]
+    fetch_client: reqwest::Client,
+}
 
-#[tool_router]
 impl McpServer {
+    fn new() -> Self {
+        Self {
+            #[cfg(feature = "fetch")]
+            fetch_client: tools::fetch::get_client(),
+        }
+    }
+}
+
+impl McpServer {
+    // Manually implement #[tool_router]. rmcp crate macro does not respect cfg feature flags
+    fn tool_router() -> ToolRouter<Self> {
+        let router = ToolRouter::<Self>::new()
+            .with_route((Self::run_python_tool_attr(), Self::run_python))
+            .with_route((Self::datetime_tool_attr(), Self::datetime));
+
+        #[cfg(feature = "searxng")]
+        let router = router.with_route((Self::web_search_tool_attr(), Self::web_search));
+        #[cfg(feature = "fetch")]
+        let router = router.with_route((Self::web_fetch_tool_attr(), Self::web_fetch));
+
+        router
+    }
+
     #[tool(description = r#"
         Run Python code using a lightweight sandboxed Monty interpreter.
         Supports core Python syntax and a very small subset of the standard library: math, re, json
@@ -43,6 +74,12 @@ impl McpServer {
     pub async fn web_search(&self, web_search: Parameters<WebSearch>) -> CallToolResult {
         tools::search::query(web_search.0).await
     }
+
+    #[cfg(feature = "fetch")]
+    #[tool(description = "Get the text content from a web URL")]
+    pub async fn web_fetch(&self, web_fetch: Parameters<WebFetch>) -> CallToolResult {
+        tools::fetch::run(self.fetch_client.clone(), web_fetch.0).await
+    }
 }
 
 #[tool_handler]
@@ -58,7 +95,7 @@ impl ServerHandler for McpServer {
 }
 
 pub async fn run() -> anyhow::Result<()> {
-    let server = McpServer;
+    let server = McpServer::new();
     let ct = CancellationToken::new();
 
     let config = StreamableHttpServerConfig::default()

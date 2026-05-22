@@ -7,6 +7,7 @@ An MCP (model context protocol) server for various small tools.
 - **Python Sandbox**: Run Python code using the Monty interpreter.
 - **Date Time**: Get the local date and time.
 - **WebSearch**: Connect to a [SearXNG](https://github.com/searxng/searxng) instance for web search capabilities.
+- **WebFetch**: Get the text content from a URL.
 
 ## Configuration
 
@@ -16,6 +17,7 @@ Ensure the following environment variables are set:
 BASE_URL="your.host" # If you are using a reverse proxy
 MCP_PORT="3000" # Host port for docker
 SEARXNG_URL="http://localhost:8080" # Search endpoint
+USER_AGENT="name/version" # Optional user agent for fetch client
 ```
 
 ### SearXNG
